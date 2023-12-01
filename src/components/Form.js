@@ -9,18 +9,29 @@ import { useDispatch } from "react-redux";
 function Form() {
   const dispatch = useDispatch();
 
-  const [todo, setTodo] = useState('')
+  const [todo, setTodo] = useState("");
+  const [showError, setShowError] = useState(false);
+
+  const handleInput = (e) => {
+    setTodo(e.target.value);
+  };
 
   const handleAddTask = () => {
-    dispatch(addTask({task: todo}))
-    setTodo('')
-  }
+    if (todo === "") {
+      return setShowError(true);
+    }
+    dispatch(addTask({ task: todo }));
+    setTodo("");
+    setShowError(false);
+  };
 
   return (
-    <Container>
+    <Container
+      sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+    >
       <Box
         sx={{
-          width: "100%",
+          width: "80%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -29,14 +40,20 @@ function Form() {
         }}
       >
         <TextField
-          id="outlined-basic"
+          id="outlined-error-helper-text"
           label="Write Task"
           variant="outlined"
           sx={{ width: "100%" }}
-          onChange={(e) => setTodo(e.target.value)}
+          onChange={handleInput}
           value={todo}
+          helperText="Please provide valid Task*"
+          error={showError}
         />
-        <Button variant="contained" sx={{ mt: 3, mb: 3 }} onClick={handleAddTask}>
+        <Button
+          variant="contained"
+          sx={{ mt: 3, mb: 3 }}
+          onClick={handleAddTask}
+        >
           Add Task
         </Button>
       </Box>

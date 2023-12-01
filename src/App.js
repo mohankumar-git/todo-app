@@ -11,7 +11,6 @@ function App() {
         <Navbar />
         <Box
         sx={{
-          width: "90%",
           maxWidth: '1020px',
           display: "flex",
           flexDirection: "column",
