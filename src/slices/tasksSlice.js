@@ -12,11 +12,10 @@ const tasksSlice = createSlice({
     reducers: {
         addTask: (state, action) => {
             const id = uuid()
-            const task = {id, ...action.payload}
+            const task = { id, completion: false, ...action.payload };
             state.taskList.push(task)
         },
         removeTask: (state, action) => {
-            console.log("triggerDEL")
             state.taskList = state.taskList.filter(each => each.id !== action.payload.id)
         },
         updateTask: (state,action) => {
@@ -24,11 +23,18 @@ const tasksSlice = createSlice({
         },
         selectTask: (state, action) => {
             state.selectedTask = action.payload
-        }
+        },
+        toggleComplete: (state, action) => {
+            console.log(action.payload)
+            state.taskList = state.taskList.map(each =>
+              each.id === action.payload.id ? { ...each, completion: !each.completion } : each
+            );
+          }
+          
     }
 })
 
-export const {addTask, removeTask, updateTask, selectTask} = tasksSlice.actions
+export const {addTask, removeTask, updateTask, selectTask, toggleComplete} = tasksSlice.actions
 
 export default tasksSlice.reducer
 

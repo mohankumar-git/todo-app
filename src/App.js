@@ -3,8 +3,13 @@ import Box from "@mui/material/Box";
 import Navbar from "./components/Navbar";
 import Form from "./components/Form";
 import TaskList from "./components/TaskList";
+import { useSelector } from "react-redux";
 
 function App() {
+
+  const {taskList} = useSelector(state => state.tasks)
+  console.log(taskList, 'app')
+
   return (
     <>
       <Box  sx={{background: 'linear-gradient(96deg, rgba(255,27,107,1) 0%, rgba(69,202,255,1) 61%)', minHeight: '100vh', position: 'relative'}}>

@@ -14,8 +14,10 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useSelector, useDispatch } from "react-redux";
-import { selectTask, updateTask, removeTask } from "../slices/tasksSlice";
+import { selectTask, updateTask, removeTask, toggleComplete } from "../slices/tasksSlice";
+import Checkbox from '@mui/material/Checkbox';
 
 const style = {
   position: "absolute",
@@ -23,7 +25,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 500,
-  borderRadius: '16px',
+  borderRadius: "16px",
   backgroundColor: "background.paper",
   boxShadow: 24,
   p: 4,
@@ -31,14 +33,14 @@ const style = {
 
 const TaskList = () => {
   const { taskList, selectedTask } = useSelector((state) => state.tasks);
-  console.log(selectedTask, "select")
+  console.log(taskList, "select");
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
 
   const handleOpen = (item) => {
-    dispatch(selectTask(item))
-    setOpen(true)
+    dispatch(selectTask(item));
+    setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
@@ -50,21 +52,28 @@ const TaskList = () => {
     if (todo === "") {
       return setShowError(true);
     }
-    dispatch(updateTask({ id: selectedTask.id, task: todo }));
-    setOpen(false)
+    dispatch(updateTask({ ...selectedTask, task: todo}));
+    setOpen(false);
   };
 
   const handleDelete = (id) => {
-    dispatch(removeTask({id}))
-  }
+    dispatch(removeTask({ id }));
+  };
 
   const handleInput = (e) => {
     setTodo(e.target.value);
   };
 
   useEffect(() => {
-    setTodo(selectedTask.task);
+    if (selectedTask.task !== undefined) {
+      setTodo(selectedTask.task);
+    }
   }, [selectedTask]);
+
+  const handleCompletion = (id) => {
+    dispatch(toggleComplete({ id }));
+  };
+  
 
   const renderModel = () => {
     return (
@@ -82,7 +91,7 @@ const TaskList = () => {
         }}
       >
         <Fade in={open}>
-          <Box sx={style}>
+          <Box sx={{ ...style, width: "70%", maxWidth: "500px" }}>
             <TextField
               id="outlined-error-helper-text"
               label="Write Task"
@@ -126,20 +135,49 @@ const TaskList = () => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {index + 1}
+                  <Typography variant="body1">{index + 1}. </Typography>
                 </TableCell>
-                <TableCell align="center">{item.task}</TableCell>
-                <TableCell align="right" sx={{display: 'flex', alignItems: 'center'}}>
-                <Button variant="contained" onClick={() => handleDelete(item.id)}>
-                    <DeleteIcon />
-                  </Button>
-                  <Button
-                    variant="contained"
-                    sx={{ mr: 1 }}
-                    onClick={() => handleOpen(item)}
+                <TableCell align="center">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
                   >
-                    <EditIcon />
-                  </Button>
+                    <Checkbox
+                      checked={item.completion}
+                      onChange={() => handleCompletion(item.id)}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                      sx={{ marginRight: "12px" }}
+                      color="success"
+                    />
+                    <Typography variant="body1" sx={{ textDecoration: item.completion ? 'line-through' : 'none' }}>{item.task}</Typography>
+                  </Box>
+                </TableCell>
+                <TableCell align="center">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      sx={{ marginRight: "10px" }}
+                      onClick={() => handleOpen(item)}
+                    >
+                      <EditIcon />
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <DeleteIcon />
+                    </Button>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
